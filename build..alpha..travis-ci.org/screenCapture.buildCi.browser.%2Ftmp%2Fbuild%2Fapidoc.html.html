@@ -1,0 +1,139 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/camsong/fetch-jsonp#readme">fetch-jsonp (v1.0.6)</a>
+</h1>
+<h4>Fetch JSONP like a boss using Fetch API</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.fetch-jsonp">module fetch-jsonp</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.fetch-jsonp.fetch-jsonp">
+            function <span class="apidocSignatureSpan"></span>fetch-jsonp
+            <span class="apidocSignatureSpan">(_url)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.fetch-jsonp" id="apidoc.module.fetch-jsonp">module fetch-jsonp</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.fetch-jsonp.fetch-jsonp" id="apidoc.element.fetch-jsonp.fetch-jsonp">
+        function <span class="apidocSignatureSpan"></span>fetch-jsonp
+        <span class="apidocSignatureSpan">(_url)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function fetchJsonp(_url) {
+  var options = arguments.length &lt;= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+  // to avoid param reassign
+  var url = _url;
+  var timeout = options.timeout || defaultOptions.timeout;
+  var jsonpCallback = options.jsonpCallback || defaultOptions.jsonpCallback;
+
+  var timeoutId = undefined;
+
+  return new Promise(function (resolve, reject) {
+    var callbackFunction = options.jsonpCallbackFunction || generateCallbackFunction();
+    var scriptId = jsonpCallback + '_' + callbackFunction;
+
+    window[callbackFunction] = function (response) {
+      resolve({
+        ok: true,
+        // keep consistent with fetch API
+        json: function json() {
+          return Promise.resolve(response);
+        }
+      });
+
+      if (timeoutId) clearTimeout(timeoutId);
+
+      removeScript(scriptId);
+
+      clearFunction(callbackFunction);
+    };
+
+    // Check if the user set their own params, and if not add a ? to start a list of params
+    url += url.indexOf('?') === -1 ? '?' : '&amp;';
+
+    var jsonpScript = document.createElement('script');
+    jsonpScript.setAttribute('src', '' + url + jsonpCallback + '=' + callbackFunction);
+    jsonpScript.id = scriptId;
+    document.getElementsByTagName('head')[0].appendChild(jsonpScript);
+
+    timeoutId = setTimeout(function () {
+      reject(new Error('JSONP request to ' + _url + ' timed out'));
+
+      clearFunction(callbackFunction);
+      removeScript(scriptId);
+    }, timeout);
+  });
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
